@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/683/trunk/jbox2d-serialization
+END
+.classpath
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/612/trunk/jbox2d-serialization/.classpath
+END
+LICENSE
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/635/trunk/jbox2d-serialization/LICENSE
+END
+.project
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/683/trunk/jbox2d-serialization/.project
+END
+pom.xml
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/683/trunk/jbox2d-serialization/pom.xml
+END
+README.txt
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/534/trunk/jbox2d-serialization/README.txt
+END

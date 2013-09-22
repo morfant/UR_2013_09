@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/691/trunk/jbox2d-jni-broadphase/src/main/c++
+END
+b2GrowableStack.h
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/689/trunk/jbox2d-jni-broadphase/src/main/c++/b2GrowableStack.h
+END
+b2BroadPhase.h
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/691/trunk/jbox2d-jni-broadphase/src/main/c++/b2BroadPhase.h
+END
+b2Math.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/689/trunk/jbox2d-jni-broadphase/src/main/c++/b2Math.h
+END
+b2Settings.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/689/trunk/jbox2d-jni-broadphase/src/main/c++/b2Settings.cpp
+END
+b2Collision.h
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/689/trunk/jbox2d-jni-broadphase/src/main/c++/b2Collision.h
+END
+b2DynamicTree.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/689/trunk/jbox2d-jni-broadphase/src/main/c++/b2DynamicTree.cpp
+END
+b2Settings.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/689/trunk/jbox2d-jni-broadphase/src/main/c++/b2Settings.h
+END
+BroadPhaseJNI.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/691/trunk/jbox2d-jni-broadphase/src/main/c++/BroadPhaseJNI.cpp
+END
+b2BroadPhase.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/691/trunk/jbox2d-jni-broadphase/src/main/c++/b2BroadPhase.cpp
+END
+b2Math.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/689/trunk/jbox2d-jni-broadphase/src/main/c++/b2Math.cpp
+END
+b2DynamicTree.h
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/690/trunk/jbox2d-jni-broadphase/src/main/c++/b2DynamicTree.h
+END
