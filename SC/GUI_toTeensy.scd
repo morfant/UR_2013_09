@@ -3,11 +3,14 @@ Arduino의 SerialMonitor와 함께 사용할 수 없다.
 */
 
 (
-var raw = 4;
+var raw = 2;
 var column = 8;
-var windowWidth = 600;
-var windowHeight = 350;
+var windowWidth = 750;
+var windowHeight = 250;
 var serialPortWhereToGet = "/dev/tty.usbmodem12341";
+
+// Rec
+var recFlag = false;
 
 // Quit
 var qBut;
@@ -18,17 +21,22 @@ var tVal = 0;
 
 // Buttons
 var butSize = 40;
-var butIntervalX = 60;
-var butIntervalY = 60;
+var butIntervalX = 80;
+var butIntervalY = 80;
 var pbVal = 0; // store previous button val
 var bVal = 0;
 
 // Sliders
-var slidSize = 40;
+var slidSizeX = 80;
+var slidSizeY = 20;
 var slidIntervalX = 60;
 var slidIntervalY = 10;
 var psiVal = 0; // store previous (int)slider val
 var siVal = 0;
+
+// Local variable
+var bLeft = 0;
+var bTop = 0;
 
 // Buttons array2D
 ~buts = Array2D.new(raw, column); // 4 raw, 8 column
@@ -60,17 +68,33 @@ p.doneAction = {("Serial port" + serialPortWhereToGet + "got closed").postln;};
 for(0, raw - 1, {| i |
 	for(0, column - 1, {| j |
 		~buts[i, j] = Button.new(w, Rect(butIntervalX * (j + 1),
-			butIntervalY * (i + 1), butSize, butSize + (slidSize/2)))
+			butIntervalY * (i + 1), butSize, butSize))
 		.states_([["Off"],["On", Color.white, Color.black]]);
 
-		~slids[i, j] = Slider.new(~buts[i, j], Rect(0, 0, butSize, butSize/2));
+		bLeft = ~buts[i, j].bounds.left;
+		bTop = ~buts[i, j].bounds.top;
+
+		~slids[i, j] = Slider.new(w, Rect(bLeft, bTop - (butSize/2), slidSizeX, slidSizeY));
 
 		~slids[i, j].action = {arg sld;
-			siVal = sld.value.linlin(0.0, 1.0, 1, 255).asInteger;
-			if(siVal != psiVal,{
-				p.putAll(Int8Array[i, j, bVal, siVal]);
-				(i + "/" + j + "=" + bVal + "/" + siVal).postln; // Print value
-				psiVal = siVal;
+			if(recFlag == true,{
+	// Save time interval
+	~getCurrentTime.value; //get current time
+	~holdTimeList.add = ~pTime - ~time;
+	~pTime = ~time;
+
+	// Save value
+	~value = sld.value;
+	~valueList.add = ~value;
+	~pValue = ~value;
+
+				},{
+				siVal = sld.value.linlin(0.0, 1.0, 1, 255).asInteger;
+				if(siVal != psiVal,{
+					p.putAll(Int8Array[i, j, bVal, siVal]);
+					(i + "/" + j + "=" + bVal + "/" + siVal).postln; // Print value
+					psiVal = siVal;
+				});
 			});
 		};
 
@@ -88,24 +112,18 @@ for(0, raw - 1, {| i |
 
 w.front;
 
+// Record Button
+~recBut = Button.new(w, Rect(windowWidth - 100, 0, 50, 50)).states_([["Rec", Color.white, Color.red], ["ing.."]]).action_({| but |
+	tVal = but.value;
+	if(tVal == 0,{recFlag = false;("Rec stop.").postln;},{recFlag = true;("Rec start!").postln;});
+	});
+
+
 // Quit Button
 qBut = Button.new(w, Rect(0, 0, 50, 50)).states_([["Quit"], ["Bye"]]).action_({w.close; p.close});
 
 // Serial Connectioin Test Button
-// testBut = Button.new(w, Rect(windowWidth - 100, 0, 50, 50)).states_([["Test"], ["LED?"]]).action_({| but |
-// 	if(but.value == 1,
-// 		{p.putAll(Int8Array[100, 101, 102, 103]);
-// 			"Test ON code send".postln; // Print value
-//
-// 		}, // Send specify value to test.
-// 		{p.putAll(Int8Array[0, 0, 0, 0]);
-// 			"Test OFF code send".postln; // Print value
-// 		}
-// 	)
-// });
-
-// Serial Connectioin Test Button
-~testBut = Button.new(w, Rect(windowWidth - 100, 0, 50, 50)).states_([["Test", Color.white, Color.black], ["LED?", Color.white, Color.blue]]).action_({| but |
+~testBut = Button.new(w, Rect(windowWidth - 50, 0, 50, 50)).states_([["Test", Color.white, Color.black], ["LED?", Color.white, Color.blue]]).action_({| but |
 	tVal = but.value;
 	if(tVal == 1, {
 		if(ptVal != tVal, {
@@ -145,6 +163,9 @@ CmdPeriod.doOnce{
 	p.close;
 };
 )
+
+
+
 
 postln(100);
 SerialPort.closeAll;

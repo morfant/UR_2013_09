@@ -1,3 +1,6 @@
+#include <TimerOne.h>
+
+
 // Control pins
 const int BUT_1 =  0;
 const int BUT_2 =  1;
@@ -20,10 +23,89 @@ int potVals[2];
 int currentStep = 0;
 byte tVal = 0;
 boolean cwFlag = true;
+int rate = 0;
 
+void beat_1()
+{  
+  half_step(1); delay(rate);
+  half_step(2); delay(rate);
+  half_step(3); delay(rate);
+  half_step(4); delay(rate);
+  half_step(5); delay(rate);
+  half_step(6); delay(rate);
+  half_step(7); delay(rate);
+  half_step(8); delay(rate + 100);
+}
+
+void beat_2()
+{
+  half_step(3); delay(rate);
+  half_step(4); delay(rate + 100);
+  half_step(3); delay(rate);
+  half_step(4); delay(rate);
+  half_step(5); delay(rate);
+  half_step(6); delay(rate + 100);
+  half_step(1); delay(rate);
+  half_step(2); delay(rate + 100);
+}
+
+void beat_3()
+{
+  half_step(6); delay(rate);
+  half_step(7); delay(rate);
+  half_step(3); delay(rate);
+  half_step(4); delay(rate);
+  half_step(5); delay(rate);
+  half_step(6); delay(rate);
+  half_step(2); delay(rate);
+  half_step(3); delay(rate);
+  half_step(4); delay(rate);
+  half_step(6); delay(rate);
+  half_step(7); delay(rate);
+  half_step(5); delay(rate);
+  half_step(6); delay(rate);
+}
+
+void beat_4()
+{
+  half_step(8); delay(rate);
+  half_step(7); delay(rate);
+  half_step(6); delay(rate);
+  half_step(5); delay(rate);
+  half_step(4); delay(rate);
+  half_step(3); delay(rate);
+  half_step(2); delay(rate);
+  half_step(1); delay(rate);
+}
+
+void readButtonAndPot()
+{
+  // Read buttons
+  for(int i = 0; i < 4; i++){
+    butVals[i] = digitalRead(i);
+//    Serial.print("Digital ");
+//    Serial.print(i);
+//    Serial.print(" : ");
+//    Serial.println(butVals[i]);
+  }
+  
+  // Read pots
+  for(int i = 0; i < 2; i++){
+    potVals[i] = analogRead(20 + i);
+//    Serial.print("Analog ");
+//    Serial.print(20 + i);
+//    Serial.print(" : ");
+//    Serial.println(potVals[i]);
+  }
+  
+  // Update rate
+  rate = potVals[0] * map(potVals[1], 0, 1023, 1, 16);  
+}
 
 void setup()   {                
   Serial.begin(9600);
+  Timer1.initialize(50000);
+  Timer1.attachInterrupt(readButtonAndPot); // blinkLED to run every 0.15 seconds
   
   // Init button array
   for(int i = 3; i != 0; i--){
@@ -70,78 +152,30 @@ void setup()   {
 
 }
 
-void loop()                     
-{
-  // Read buttons
-  for(int i = 0; i < 4; i++){
-    butVals[i] = digitalRead(i);
-//    Serial.print("Digital ");
-//    Serial.print(i);
-//    Serial.print(" : ");
-//    Serial.println(butVals[i]);
-  }
+void loop()
+{ 
+  if(butVals[0]) beat_1();
+  if(butVals[1]) beat_2();
+  if(butVals[2]) beat_3();
+  if(butVals[3]) beat_4();
+  delayMicroseconds(10);
   
-  // Read pots
-  for(int i = 0; i < 2; i++){
-    potVals[i] = analogRead(20 + i);
-//    Serial.print("Analog ");
-//    Serial.print(20 + i);
-//    Serial.print(" : ");
-//    Serial.println(potVals[i]);
-  }
-  
-
   // Step idx
-  if(cwFlag){
-    // half-step cw
-    if(currentStep <= 8) currentStep++;
-    else currentStep = 1;
-  }else{
-    // half-step ccw
-    if(currentStep > 1) currentStep--;
-    else currentStep = 8;
-  }
+//  if(cwFlag){
+//    // half-step cw
+//    if(currentStep <= 8) currentStep++;
+//    else currentStep = 1;
+//  }else{
+//    // half-step ccw
+//    if(currentStep > 1) currentStep--;
+//    else currentStep = 8;
+//  }
 
 //  potVal = map(analogRead(POT_PIN), 0, 255, 0, 2000000);
 //  potVal = map(analogRead(POT_PIN), 0, 255, 0, 1000);
 //  half_step(currentStep);
   
-  
-  /*
-  half_step(1);
-      delay(potVal);  
-  half_step(2);
-      delay(potVal);
-  half_step(3);
-      delay(potVal);
-  half_step(4);
-      delay(potVal + 100);
-  half_step(2);
-      delay(potVal);
-  half_step(3);
-      delay(potVal);
-  half_step(4);
-      delay(potVal);
-  half_step(5);  
-      delay(potVal + 100);
-  half_step(1);
-      delay(potVal);  
-  half_step(2);
-      delay(potVal + 100);
-  half_step(5);
-      delay(potVal);
-  half_step(6);
-      delay(potVal);
-  half_step(7);
-      delay(potVal);
-  half_step(8);
-      delay(potVal + 100);
-  half_step(3);
-      delay(potVal);
-  half_step(4);  
-      delay(potVal + 100);
-  */
-  
+    
 //  delayMicroseconds(potVal);
 //    delay(potVal);
 
@@ -150,26 +184,16 @@ void loop()
 // Just spinning
 // CW
 //  for(int i = 1; i <= 8; i++){
-//    waveDrive(i);
-//    two_phase(i);
 //    half_step(i);
 //    delayMicroseconds(500);
 //  }
 
-  //delay(200);
-
-
 //// CCW
 //  for(int i = 8; i >= 1; i--){
-//    waveDrive(i);
-//    two_phase(i);
 //    half_step(i);
 //    delayMicroseconds(2000);
 //  }
-//  delay(1000);
 //}
-
-  delay(100);
 
 }
 
