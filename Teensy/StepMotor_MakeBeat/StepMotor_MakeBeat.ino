@@ -1,51 +1,62 @@
+// Control pins
+const int BUT_1 =  0;
+const int BUT_2 =  1;
+const int BUT_3 =  2;
+const int BUT_4 =  3;
+const int POT_1 =  21;
+const int POT_2 =  20;
+const int LED_PIN = 11;
 
+// Motor control pins
 const int A =  12;
 const int AA =  13;
 const int B =  14;
 const int BB =  15;
-const int LED_PIN = 11;
-const int POT_PIN = 21;
 
-char sBuf[4];
-char onOff[8];
-unsigned char holdTime[4][8];
+// Variables
+boolean butVals[4];
+int potVals[2];
 
-byte jointAngle = 0;
 int currentStep = 0;
-
 byte tVal = 0;
-int potVal = 0;
-
 boolean cwFlag = true;
 
-// The setup() method runs once, when the sketch starts
-
-void establishContact() {
-  while (Serial.available() <= 0) {
-    Serial.print('A');   // send a capital A
-    delay(300);
-  }
-}
 
 void setup()   {                
   Serial.begin(9600);
-//  while (!Serial) {
-//    ; // wait for serial port to connect. Needed for Leonardo only
-//  }
-//  establishContact();  // send a byte to establish contact until receiver responds 
   
+  // Init button array
+  for(int i = 3; i != 0; i--){
+    butVals[i] = 0;
+  }
+  
+  // Init pot array
+  for(int i = 1; i != 0; i--){
+    potVals[i] = 0;
+  }
+  
+  // Pin mode setup
   pinMode(LED_PIN, OUTPUT);
-  pinMode(POT_PIN, INPUT);
+
+  pinMode(BUT_1, INPUT);
+  pinMode(BUT_2, INPUT);
+  pinMode(BUT_3, INPUT);
+  pinMode(BUT_4, INPUT);
+
+  pinMode(POT_1, INPUT);
+  pinMode(POT_2, INPUT);
   
   pinMode(A, OUTPUT);
   pinMode(AA, OUTPUT);
   pinMode(B, OUTPUT);
   pinMode(BB, OUTPUT);
-//  
+
+  // Init value
   digitalWrite(A, HIGH);
   digitalWrite(AA, HIGH);
   digitalWrite(B, HIGH);
   digitalWrite(BB, HIGH);  
+
   
   // TEST CODE
 //  for(int j = 0; j < 3000; j++){  
@@ -61,14 +72,24 @@ void setup()   {
 
 void loop()                     
 {
-  // Get serial from SC
-  if (Serial.available()) {
-    Serial.readBytes(sBuf, 4);
-    
-    if(sBuf[2] != 0) holdTime[sBuf[0]][sBuf[1]] = sBuf[3];
-    else holdTime[sBuf[0]][sBuf[1]] = 0;
-  }   
-
+  // Read buttons
+  for(int i = 0; i < 4; i++){
+    butVals[i] = digitalRead(i);
+//    Serial.print("Digital ");
+//    Serial.print(i);
+//    Serial.print(" : ");
+//    Serial.println(butVals[i]);
+  }
+  
+  // Read pots
+  for(int i = 0; i < 2; i++){
+    potVals[i] = analogRead(20 + i);
+//    Serial.print("Analog ");
+//    Serial.print(20 + i);
+//    Serial.print(" : ");
+//    Serial.println(potVals[i]);
+  }
+  
 
   // Step idx
   if(cwFlag){
@@ -82,9 +103,11 @@ void loop()
   }
 
 //  potVal = map(analogRead(POT_PIN), 0, 255, 0, 2000000);
-  potVal = map(analogRead(POT_PIN), 0, 255, 0, 1000);
+//  potVal = map(analogRead(POT_PIN), 0, 255, 0, 1000);
 //  half_step(currentStep);
   
+  
+  /*
   half_step(1);
       delay(potVal);  
   half_step(2);
@@ -117,7 +140,8 @@ void loop()
       delay(potVal);
   half_step(4);  
       delay(potVal + 100);
-
+  */
+  
 //  delayMicroseconds(potVal);
 //    delay(potVal);
 
@@ -144,6 +168,8 @@ void loop()
 //  }
 //  delay(1000);
 //}
+
+  delay(100);
 
 }
 

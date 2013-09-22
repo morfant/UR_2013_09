@@ -15,6 +15,8 @@ byte jointAngle = 0;
 int currentStep = 0;
 boolean sendFlag = false;
 byte tVal = 0;
+
+volatile int byteRead = 0;
 int pByteRead = 0;
 int avaByteNum = 0;
 int pAvaByteNum = 0;
@@ -29,7 +31,17 @@ void establishContact() {
   }
 }
 
-void setup()   {                
+void setup()   {
+
+  // init array with zero.
+  for(int i = 3; i != 0; i--){
+    sBuf[i] = 0;
+    onOff[i] = 0;
+    for(int j = 7; j != 0; j--){
+      holdTime[i][j] = 0;  
+    }
+  }
+  
   Serial.begin(9600);
 //  while (!Serial) {
 //    ; // wait for serial port to connect. Needed for Leonardo only
@@ -76,8 +88,13 @@ void getSerial()
 //    int byteRead = Serial.readBytes(sBuf, 4);
 //    if(byteRead != pByteRead) Serial.println(byteRead);
 //    pByteRead = byteRead;
-    Serial.readBytes(sBuf, 4);
-    
+
+      Serial.readBytes(sBuf, 4);
+
+//      while(byteRead = Serial.readBytes(sBuf, 4) != 4){
+//        byteRead = Serial.readBytes(sBuf, 4);
+//      }
+
   } 
 }
 
