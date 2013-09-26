@@ -288,21 +288,21 @@ void readButtonAndPot()
 
 
 // Sync light with motor step ------------------------------
-void beatAndLight_A(int idx, int dt) //normally dt is rate_B/2
+void beatAndLight_A(int idx, int dt)
 {
   digitalWrite(light_A, HIGH);
   half_step_A(idx); delay(dt);
   digitalWrite(light_A, LOW); delay(dt);
 }
 
-void beatAndLight_B(int idx, int dt) //normally dt is rate_B/2
+void beatAndLight_B(int idx, int dt)
 {
   digitalWrite(light_B, HIGH);
   half_step_B(idx); delay(dt);
   digitalWrite(light_B, LOW); delay(dt);
 }
 
-void beatAndLight_AB(int idx, int dt) //normally dt is rate_B/2
+void beatAndLight_AB(int idx, int dt)
 {
   digitalWrite(light_A, HIGH); digitalWrite(light_B, HIGH);
   half_step_A(idx); half_step_B(idx); delay(dt);
@@ -314,62 +314,54 @@ void beatAndLight_AB(int idx, int dt) //normally dt is rate_B/2
 // ************* Beat patterns ************* 
 void beat_1()
 {
-  int ht = rate/2;
-  int htl = (rate + 100) / 2;
-  beatAndLight_A(1, ht);
-  beatAndLight_A(2, ht);
-  beatAndLight_A(3, ht);
-    beatAndLight_AB(4, ht);
-  beatAndLight_A(5, ht);
-  beatAndLight_A(6, ht);
-  beatAndLight_A(7, ht);
-    beatAndLight_AB(8, htl);
+  beatAndLight_A(1, rate/2);
+  beatAndLight_A(2, rate/2);
+  beatAndLight_A(3, rate/2);
+    beatAndLight_AB(4, rate/2);
+  beatAndLight_A(5, rate/2);
+  beatAndLight_A(6, rate/2);
+  beatAndLight_A(7, rate/2);
+    beatAndLight_AB(8, (rate + 100)/2);
 }
 
 void beat_2()
 {
-  int ht = rate/2;
-  int htl = (rate + 100) / 2;
-  beatAndLight_A(3, ht);
-  beatAndLight_A(4, ht);
-    beatAndLight_AB(3, ht);
-  beatAndLight_A(4, ht);
-  beatAndLight_A(5, ht);
-    beatAndLight_AB(6, htl);
-  beatAndLight_A(1, ht);
-    beatAndLight_AB(2, htl);  
+  beatAndLight_A(3, rate/2);
+  beatAndLight_A(4, rate/2);
+    beatAndLight_AB(3, rate/2);
+  beatAndLight_A(4, rate/2);
+  beatAndLight_A(5, rate/2);
+    beatAndLight_AB(6, (rate + 100) / 2);
+  beatAndLight_A(1, rate/2);
+    beatAndLight_AB(2, (rate + 100) / 2);  
 }
 
 
 void beat_3()
 {
-  int ht = rate/2;
-  int htl = (rate + 100) / 2;
-  beatAndLight_A(6, ht);
-    beatAndLight_AB(7, ht);
-  beatAndLight_A(3, ht);
-  beatAndLight_A(4, ht);
-  beatAndLight_A(5, ht);
-    beatAndLight_AB(6, ht);
-    beatAndLight_AB(2, ht);
-  beatAndLight_A(3, ht);  
-  beatAndLight_A(4, ht);
-    beatAndLight_AB(6, ht);
-  beatAndLight_A(7, ht);
-  beatAndLight_A(5, ht);
-  beatAndLight_A(6, ht);  
+  beatAndLight_A(6, rate/2);
+    beatAndLight_AB(7, rate/2);
+  beatAndLight_A(3, rate/2);
+  beatAndLight_A(4, rate/2);
+  beatAndLight_A(5, rate/2);
+    beatAndLight_AB(6, rate/2);
+    beatAndLight_AB(2, rate/2);
+  beatAndLight_A(3, rate/2);  
+  beatAndLight_A(4, rate/2);
+    beatAndLight_AB(6, rate/2);
+  beatAndLight_A(7, rate/2);
+  beatAndLight_A(5, rate/2);
+  beatAndLight_A(6, rate/2);  
 }
 
 void beat_4()
 {
-  int ht = rate/2;
-  int htl = (rate + 100) / 2;  
-    beatAndLight_AB(8, ht);
-  beatAndLight_A(7, ht);
-  beatAndLight_A(6, ht);
-  beatAndLight_A(5, ht);
-  beatAndLight_A(4, htl);  
-    beatAndLight_AB(3, ht);
-  beatAndLight_A(2, ht);
-  beatAndLight_A(1, ht);  
+    beatAndLight_AB(8, rate/2);
+  beatAndLight_A(7, rate/2);
+  beatAndLight_A(6, rate/2);
+  beatAndLight_A(5, rate/2);
+  beatAndLight_A(4, (rate + 100) / 2);  
+    beatAndLight_AB(3, rate/2);
+  beatAndLight_A(2, rate/2);
+  beatAndLight_A(1, rate/2);  
 }
