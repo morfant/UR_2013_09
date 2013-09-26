@@ -1,60 +1,45 @@
 #include <TimerOne.h>
 
-
-// Control pins
-const int BUT_1 =  0;
-const int BUT_2 =  1;
-const int BUT_3 =  2;
-const int BUT_4 =  3;
-const int POT_1 =  21;
-const int POT_2 =  20;
-
 // Motor control pin A
-const int A =  11;
-const int AA =  12;
-const int B =  13;
-const int BB =  14;
+const int A = 0;
+const int AA = 1;
+const int B = 2;
+const int BB = 3;
 
 // Motor control pin B
-const int A_2 =  8;
-const int AA_2 =  7;
-const int B_2 =  6;
-const int BB_2 =  5;
+const int A_2 = 6;
+const int AA_2 = 7;
+const int B_2 = 8;
+const int BB_2 = 9;
 
 // Light signal pins
-const int light_A = 19;
-const int light_B = 18;
+const int light_A = 21;
+const int light_B = 20;
 
-// Variables
-boolean butVals[4];
-int potVals[2];
-int rate = 0;
+const int kTimeMulti = 20;
+int potsValFor_A[2];
+int potsValFor_B[2];
+int pitch_A = 0;
+int pitch_B = 0;
+int piMod_A = 0;
+int piMod_B = 0;
+int rate_A = 0;
+int rate_B = 0;
 
 
-// ********** Setup **********
-void setup()   {                
+void setup()   {
+  
   Serial.begin(9600);
   Timer1.initialize(50000);
-  Timer1.attachInterrupt(readButtonAndPot);
-  
-  // Init button array
-  for(int i = 3; i != 0; i--){
-    butVals[i] = 0;
-  }
-  
-  // Init pot array
-  for(int i = 1; i != 0; i--){
-    potVals[i] = 0;
-  }
-  
-  // Pin mode setup ------------------------------
-  pinMode(BUT_1, INPUT);
-  pinMode(BUT_2, INPUT);
-  pinMode(BUT_3, INPUT);
-  pinMode(BUT_4, INPUT);
-  pinMode(POT_1, INPUT);
-  pinMode(POT_2, INPUT);
-  
+  Timer1.attachInterrupt(readPots);
+
+  // init array with zero.
+    for(int i = 0; i < 2; i++){
+      potsValFor_A[i] = 0;
+      potsValFor_B[i] = 0;
+    }
+    
+  // Pin mode setup ------------------------------  
   pinMode(A, OUTPUT);
   pinMode(AA, OUTPUT);
   pinMode(B, OUTPUT);
@@ -64,50 +49,84 @@ void setup()   {
   pinMode(B_2, OUTPUT);
   pinMode(BB_2, OUTPUT);
   
-  // Ligit pin mode setup.
-  pinMode(light_A, OUTPUT);
-  pinMode(light_B, OUTPUT);
-
-  // Init Pin value ------------------------------
+  // Init Pin value ------------------------------  
   digitalWrite(A, HIGH);
   digitalWrite(AA, HIGH);
   digitalWrite(B, HIGH);
-  digitalWrite(BB, HIGH);  
+  digitalWrite(BB, HIGH);
   digitalWrite(A_2, HIGH);
   digitalWrite(AA_2, HIGH);
   digitalWrite(B_2, HIGH);
   digitalWrite(BB_2, HIGH);  
-
-  
-  // TEST CODE ------------------------------
-//  for(int j = 0; j < 3000; j++){  
-//    for(int i = 1; i <= 8; i++){
-////      half_step(i);
-//      half_step2(i);
-////      digitalWrite(light_B, HIGH);
-//      delay(300);      
-//      delayMicroseconds(200000);
-////      digitalWrite(light_B, LOW);
-//    }
-//  }
-
-
 }
 
-// ********** Main Loop **********
-void loop()
-{ 
-  if(butVals[0]) beat_1();
-  if(butVals[1]) beat_2();
-  if(butVals[2]) beat_3();
-  if(butVals[3]) beat_4();
+  // Get serial from SC
+void readPots()
+{
+  // Read pots
+  for(int i = 0; i < 2; i++){
+    potsValFor_A[i] = analogRead(15 - i);
+    potsValFor_B[i] = analogRead(13 - i);
+  }
+  
+  // Update pitch, rate
+  pitch_A = potsValFor_A[0] / 128;
+  piMod_A = pitch_A % 128;  
+  rate_A = potsValFor_A[1];
+
+  pitch_B = potsValFor_B[0] / 128;
+  piMod_B = pitch_B % 128;    
+  rate_B = potsValFor_B[1];
+//  rate = potVals[0] * map(potVals[1], 0, 1023, 1, 16);    
+}
+
+void loop()                     
+{
+  sound_A();
+  hold_A(rate_A);
+  sound_B();
+  hold_B(rate_B);
+
   delayMicroseconds(10);
-  
-//  noInterrupts();
-//  Serial.println(rate);
-//  interrupts();
 }
 
+void sound_A()
+{  
+  for(int i = 0; i <= pitch_A; i++){
+    if(i != pitch_A) stepAndLight_A(i, 128 * kTimeMulti);
+    else stepAndLight_A(pitch_A, piMod_A * kTimeMulti);
+  }
+}
+
+void sound_B()
+{
+  for(int i = 0; i <= pitch_B; i++){
+    if(i != pitch_B) stepAndLight_B(i, 128 * kTimeMulti);
+    else stepAndLight_A(pitch_B, piMod_B * kTimeMulti);
+  }
+}
+
+
+void stepAndLight_A(int idx, int dt)
+{
+  digitalWrite(light_A, HIGH);
+  half_step_A(idx); delayMicroseconds(dt/2);
+  digitalWrite(light_A, LOW); delayMicroseconds(dt/2);
+}
+
+void stepAndLight_B(int idx, int dt)
+{
+  digitalWrite(light_B, HIGH);
+  half_step_B(idx); delayMicroseconds(dt/2);
+  digitalWrite(light_B, LOW); delayMicroseconds(dt/2);
+}
+
+void stepAndLight_AB(int idx, int dt)
+{
+  digitalWrite(light_A, HIGH); digitalWrite(light_B, HIGH);
+  half_step_A(idx); half_step_B(idx); delayMicroseconds(dt/2);
+  digitalWrite(light_A, LOW); digitalWrite(light_B, LOW); delayMicroseconds(dt/2);
+}
 
 // Motor control ------------------------------
 void half_step_A(int highInput) //2-1-2 sequenceß
@@ -266,100 +285,21 @@ void half_step_B(int highInput) //2-1-2 sequenceß
   }
 }
 
-// read Buttons and Pots ------------------------------
-void readButtonAndPot()
+
+void hold_A(int ht) // A motor control pins HIGH
 {
-  // Read buttons
-  for(int i = 0; i < 4; i++){
-    butVals[i] = digitalRead(i);
-  }
-  
-  // Read pots
-  for(int i = 0; i < 2; i++){
-    potVals[i] = analogRead(20 + i);
-  }
-  
-  // Update rate
-  rate = potVals[0] * map(potVals[1], 0, 1023, 1, 16);    
-//  rate_A = map(potVals[0], 0, 1023, 1, 32) * kMultiA;  
-//  rate_B = map(potVals[1], 0, 1023, 1, 32) * kMultiB;    
+    digitalWrite(A, HIGH);
+    digitalWrite(AA, HIGH);
+    digitalWrite(B, HIGH);
+    digitalWrite(BB, HIGH);
+    delayMicroseconds(ht);
 }
 
-
-// Sync light with motor step ------------------------------
-void stepAndLight_A(int idx, int dt)
+void hold_B(int ht) // B motor control pins HIGH
 {
-  digitalWrite(light_A, HIGH);
-  half_step_A(idx); delay(dt/2);
-  digitalWrite(light_A, LOW); delay(dt/2);
-}
-
-void stepAndLight_B(int idx, int dt)
-{
-  digitalWrite(light_B, HIGH);
-  half_step_B(idx); delay(dt/2);
-  digitalWrite(light_B, LOW); delay(dt/2);
-}
-
-void stepAndLight_AB(int idx, int dt)
-{
-  digitalWrite(light_A, HIGH); digitalWrite(light_B, HIGH);
-  half_step_A(idx); half_step_B(idx); delay(dt/2);
-  digitalWrite(light_A, LOW); digitalWrite(light_B, LOW); delay(dt/2);
-}
-
-
-// ************* Beat patterns ************* 
-void beat_1()
-{
-  stepAndLight_A(1, rate);
-  stepAndLight_A(2, rate);
-  stepAndLight_A(3, rate);
-    stepAndLight_AB(4, rate);
-  stepAndLight_A(5, rate);
-  stepAndLight_A(6, rate);
-  stepAndLight_A(7, rate);
-    stepAndLight_AB(8, rate + 100);
-}
-
-void beat_2()
-{
-  stepAndLight_A(3, rate);
-  stepAndLight_A(4, rate);
-    stepAndLight_AB(3, rate);
-  stepAndLight_A(4, rate);
-  stepAndLight_A(5, rate);
-    stepAndLight_AB(6, rate + 100);
-  stepAndLight_A(1, rate);
-    stepAndLight_AB(2, rate + 100);
-}
-
-
-void beat_3()
-{
-  stepAndLight_A(6, rate);
-    stepAndLight_AB(7, rate);
-  stepAndLight_A(3, rate);
-  stepAndLight_A(4, rate);
-  stepAndLight_A(5, rate);
-    stepAndLight_AB(6, rate);
-    stepAndLight_AB(2, rate);
-  stepAndLight_A(3, rate);  
-  stepAndLight_A(4, rate);
-    stepAndLight_AB(6, rate);
-  stepAndLight_A(7, rate);
-  stepAndLight_A(5, rate);
-  stepAndLight_A(6, rate);  
-}
-
-void beat_4()
-{
-    stepAndLight_AB(8, rate);
-  stepAndLight_A(7, rate);
-  stepAndLight_A(6, rate);
-  stepAndLight_A(5, rate);
-  stepAndLight_A(4, rate + 100);
-    stepAndLight_AB(3, rate);
-  stepAndLight_A(2, rate);
-  stepAndLight_A(1, rate);  
+    digitalWrite(A_2, HIGH);
+    digitalWrite(AA_2, HIGH);
+    digitalWrite(B_2, HIGH);
+    digitalWrite(BB_2, HIGH);  
+    delayMicroseconds(ht);    
 }
