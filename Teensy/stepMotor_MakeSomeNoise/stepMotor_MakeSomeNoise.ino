@@ -16,7 +16,8 @@ const int BB_2 = 9;
 const int light_A = 21;
 const int light_B = 20;
 
-const int kTimeMulti = 20;
+//const int kTimeMulti = 10;
+int timeMulti = 10;
 int potsValFor_A[2];
 int potsValFor_B[2];
 int pitch_A = 0;
@@ -71,11 +72,24 @@ void readPots()
   
   // Update pitch, rate
   pitch_A = potsValFor_A[0] / 128;
-  piMod_A = pitch_A % 128;  
-  rate_A = potsValFor_A[1];
+//  piMod_A = map(potsValFor_A[0], 0, 1023, 1, 1023) % 128;
+
+  if(potsValFor_A != 0){
+    piMod_A = potsValFor_A[0] % 128;
+  }else{
+    piMod_A = 0;
+  }
+  
+  timeMulti = map(potsValFor_A[1], 0, 1023, 1, 32);
 
   pitch_B = potsValFor_B[0] / 128;
-  piMod_B = pitch_B % 128;    
+
+  if(potsValFor_B != 0){
+    piMod_B = potsValFor_B[0] % 128;
+  }else{
+    piMod_B = 0;
+  }
+
   rate_B = potsValFor_B[1];
 //  rate = potVals[0] * map(potVals[1], 0, 1023, 1, 16);    
 }
@@ -83,26 +97,36 @@ void readPots()
 void loop()                     
 {
   sound_A();
-  hold_A(rate_A);
-  sound_B();
-  hold_B(rate_B);
+//  hold_A(rate_A);
+//  sound_B();
+//  hold_B(rate_B);
 
   delayMicroseconds(10);
+
+  // TEST CODE  
+//  noInterrupts();
+//  Serial.print("pitch_A: ");
+//  Serial.println(pitch_A);
+////  Serial.println(potsValFor_A[0]);
+//  Serial.print("piMod_A: ");
+//  Serial.println(piMod_A);
+//  interrupts();
+  
 }
 
 void sound_A()
 {  
   for(int i = 0; i <= pitch_A; i++){
-    if(i != pitch_A) stepAndLight_A(i, 128 * kTimeMulti);
-    else stepAndLight_A(pitch_A, piMod_A * kTimeMulti);
+    if(i != pitch_A) stepAndLight_A(i, 128 * timeMulti);
+    else stepAndLight_A(pitch_A, piMod_A * timeMulti);
   }
 }
 
 void sound_B()
 {
   for(int i = 0; i <= pitch_B; i++){
-    if(i != pitch_B) stepAndLight_B(i, 128 * kTimeMulti);
-    else stepAndLight_A(pitch_B, piMod_B * kTimeMulti);
+    if(i != pitch_B) stepAndLight_B(i, 128 * 100000);
+    else stepAndLight_A(pitch_B, piMod_B * 100000);
   }
 }
 
