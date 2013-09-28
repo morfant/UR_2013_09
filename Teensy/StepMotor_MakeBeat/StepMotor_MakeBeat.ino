@@ -352,14 +352,26 @@ void beat_3()
   stepAndLight_A(6, rate);  
 }
 
+//void beat_4()
+//{
+//    stepAndLight_AB(8, rate);
+//  stepAndLight_A(7, rate);
+//  stepAndLight_A(6, rate);
+//  stepAndLight_A(5, rate);
+//  stepAndLight_A(4, rate + 100);
+//    stepAndLight_AB(3, rate);
+//  stepAndLight_A(2, rate);
+//  stepAndLight_A(1, rate);  
+//}
+
 void beat_4()
 {
-    stepAndLight_AB(8, rate);
-  stepAndLight_A(7, rate);
-  stepAndLight_A(6, rate);
-  stepAndLight_A(5, rate);
-  stepAndLight_A(4, rate + 100);
-    stepAndLight_AB(3, rate);
-  stepAndLight_A(2, rate);
-  stepAndLight_A(1, rate);  
+  stepAndLight_AB(1, rate);
+  stepAndLight_AB(2, rate);
+  stepAndLight_AB(3, rate);
+  stepAndLight_AB(4, rate);
+  stepAndLight_AB(5, rate);
+  stepAndLight_AB(6, rate);
+  stepAndLight_AB(7, rate);
+  stepAndLight_AB(8, rate);  
 }

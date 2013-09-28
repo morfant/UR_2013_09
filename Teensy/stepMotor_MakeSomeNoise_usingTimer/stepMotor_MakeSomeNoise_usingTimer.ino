@@ -2,6 +2,13 @@
 #include <avr/io.h>
 #include <TimerOne.h>
 
+int count = 0;
+unsigned long m_time = 0;
+unsigned long m_time_diff = 0;
+boolean m_timeCheck = false;
+boolean hold_B_toggle = false;
+
+
 // Motor control pin A
 const int A = 0;
 const int AA = 1;
@@ -36,7 +43,7 @@ void setup()   {
   Timer1.initialize(50000);
   Timer1.attachInterrupt(readPots);
   
-//  init8BitTimerB_0(10000);
+  init8BitTimerB_0(0);
 
   // init array with zero.
     for(int i = 0; i < 2; i++){
@@ -53,6 +60,10 @@ void setup()   {
   pinMode(AA_2, OUTPUT);
   pinMode(B_2, OUTPUT);
   pinMode(BB_2, OUTPUT);
+  
+  pinMode(light_A, OUTPUT);
+  pinMode(light_B, OUTPUT);
+  
   
   // Init Pin value ------------------------------  
   digitalWrite(A, HIGH);
@@ -94,22 +105,24 @@ void readPots()
     piMod_B = 0;
   }
 
-  rate_B = potsValFor_B[1];
-//  rate = potVals[0] * map(potVals[1], 0, 1023, 1, 16);    
+//  rate_B = potsValFor_B[1];
+  rate_B = map(potsValFor_B[1], 0, 1023, 1, 3000);    
 }
 
 // ************ Main loop ************
 void loop()                     
 {
-  sound_A();
-//  hold_A(rate_A);
-//  sound_B();
-//  hold_B(rate_B);
+  if(hold_B_toggle){
+    hold_B();
+    sound_A();
+  } else{
+    hold_A();
+    sound_B();
+  }
+  
+//  digitalWrite(light_A, HIGH);  
 
-  delayMicroseconds(10);
-
-//  delay(1000);
-//  restart8BitTimerB_0();
+//  delayMicroseconds(10);
 
   // TEST CODE  
 //  noInterrupts();
@@ -124,6 +137,8 @@ void loop()
 
 void sound_A()
 {  
+  digitalWrite(light_A, HIGH);
+  
   for(int i = 0; i <= pitch_A; i++){
     if(i != pitch_A) stepAndLight_A(i, 128 * timeMulti);
     else stepAndLight_A(pitch_A, piMod_A * timeMulti);
@@ -132,32 +147,37 @@ void sound_A()
 
 void sound_B()
 {
+  digitalWrite(light_B, HIGH);
+  
   for(int i = 0; i <= pitch_B; i++){
-    if(i != pitch_B) stepAndLight_B(i, 128 * 100000);
-    else stepAndLight_A(pitch_B, piMod_B * 100000);
+    if(i != pitch_B) stepAndLight_B(i, 128 * timeMulti);
+    else stepAndLight_A(pitch_B, piMod_B * timeMulti);
   }
 }
 
 
 void stepAndLight_A(int idx, int dt)
 {
-  digitalWrite(light_A, HIGH);
+//  digitalWrite(light_A, HIGH);
   half_step_A(idx); delayMicroseconds(dt/2);
-  digitalWrite(light_A, LOW); delayMicroseconds(dt/2);
+//  digitalWrite(light_A, LOW);
+  delayMicroseconds(dt/2);
 }
 
 void stepAndLight_B(int idx, int dt)
 {
-  digitalWrite(light_B, HIGH);
+//  digitalWrite(light_B, HIGH);
   half_step_B(idx); delayMicroseconds(dt/2);
-  digitalWrite(light_B, LOW); delayMicroseconds(dt/2);
+//  digitalWrite(light_B, LOW); 
+  delayMicroseconds(dt/2);
 }
 
 void stepAndLight_AB(int idx, int dt)
 {
-  digitalWrite(light_A, HIGH); digitalWrite(light_B, HIGH);
-  half_step_A(idx); half_step_B(idx); delayMicroseconds(dt/2);
-  digitalWrite(light_A, LOW); digitalWrite(light_B, LOW); delayMicroseconds(dt/2);
+  //digitalWrite(light_A, HIGH); digitalWrite(light_B, HIGH);
+  half_step_A(idx); half_step_B(idx);
+  delayMicroseconds(dt/2);
+//  digitalWrite(light_A, LOW); digitalWrite(light_B, LOW); delayMicroseconds(dt/2);
 }
 
 // Motor control ------------------------------
@@ -318,20 +338,22 @@ void half_step_B(int highInput) //2-1-2 sequenceß
 }
 
 
-void hold_A(int ht) // A motor control pins HIGH
+void hold_A() // A motor control pins HIGH
 {
+    digitalWrite(light_A, LOW);  
     digitalWrite(A, HIGH);
     digitalWrite(AA, HIGH);
     digitalWrite(B, HIGH);
     digitalWrite(BB, HIGH);
-    delayMicroseconds(ht);
+//    delayMicroseconds(ht);
 }
 
-void hold_B(int ht) // B motor control pins HIGH
+void hold_B() // B motor control pins HIGH
 {
+    digitalWrite(light_B, LOW);
     digitalWrite(A_2, HIGH);
     digitalWrite(AA_2, HIGH);
     digitalWrite(B_2, HIGH);
     digitalWrite(BB_2, HIGH);  
-    delayMicroseconds(ht);    
+//    delayMicroseconds(ht);
 }
